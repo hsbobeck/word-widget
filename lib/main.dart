@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'word_card.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const WordWidgetApp());
 }
 
 class WordWidgetApp extends StatelessWidget {
   const WordWidgetApp({Key? key}) : super(key: key);
-
-  static const primaryColor = Color(0xff009c3b);
 
   // This widget is the root of your application.
   @override
@@ -45,6 +45,15 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       // TODO
     });
+    HomeWidget.saveWidgetData(
+      'title',
+      'borboleta',
+    );
+    HomeWidget.saveWidgetData(
+      'message',
+      'butterfly',
+    );
+    HomeWidget.updateWidget(name: 'WidgetProvider');
   }
 
   @override
@@ -67,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: WordCard(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: _refreshWord,
         tooltip: 'New Word',
         child: const Icon(Icons.refresh),
       ), // This trailing comma makes auto-formatting nicer for build methods.
