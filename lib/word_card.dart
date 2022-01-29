@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'bloc/word.dart';
+
 class WordCard extends StatelessWidget {
-  const WordCard({Key? key}) : super(key: key);
+  const WordCard({
+    required this.word,
+    Key? key,
+  }) : super(key: key);
+
+  final Word word;
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +20,9 @@ class WordCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.question_answer),
-              title: Text('jeito'),
-              subtitle: Text('way, style, manner'),
+              leading: const Icon(Icons.question_answer),
+              title: Text(word.word),
+              subtitle: Text(word.description),
             ),
           ],
         ),
