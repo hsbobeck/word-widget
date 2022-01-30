@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:word_widget/bloc/database_manager.dart';
 
+import 'bloc/widget_manager.dart';
 import 'bloc/word.dart';
 import 'word_card.dart';
 
@@ -38,19 +39,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void _refreshWord() {
-    setState(() {
-      // TODO
-    });
-    HomeWidget.saveWidgetData(
-      'title',
-      'borboleta',
-    );
-    HomeWidget.saveWidgetData(
-      'message',
-      'butterfly',
-    );
-    HomeWidget.updateWidget(name: 'WidgetProvider');
+  Word emptyWord = const Word(word: '', description: '');
+
+  Future<void> _refreshWord() async {
+    // set new random word from dataset
+    await widget.dbManager.newRandomWord();
+    // refresh in-app widgets
+    setState(() {});
+    // refresh homescreen widgets
+    WidgetManager.setWord(await widget.dbManager.word);
   }
 
   @override
@@ -61,10 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: FutureBuilder(
-            future: widget.dbManager.getRandomWord(),
-            initialData: const Word(word: '', description: ''),
-            builder: (context, AsyncSnapshot<Word> snapshot) {
-              return WordCard(word: snapshot.data!);
+            future: widget.dbManager.word,
+            builder: (context, AsyncSnapshot<Word?> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  print('FutureBuilder snapshot error');
+                }
+                return WordCard(word: snapshot.data ?? emptyWord);
+              } else {
+                return WordCard(word: emptyWord);
+              }
             }),
       ),
       floatingActionButton: FloatingActionButton(

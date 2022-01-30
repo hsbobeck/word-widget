@@ -7,9 +7,8 @@ import 'package:path/path.dart';
 import 'package:word_widget/bloc/word.dart';
 
 class DatabaseManager {
-  Database? db;
-
-  DatabaseManager();
+  Database? _db;
+  Word? _currentWord;
 
   Future<void> loadDatabase() async {
     var databasesPath = await getDatabasesPath();
@@ -38,21 +37,29 @@ class DatabaseManager {
       print("Opening existing database");
     }
     // open the database
-    db = await openDatabase(path, readOnly: true);
+    _db = await openDatabase(path, readOnly: true);
     print('Loaded database');
   }
 
-  Future<Word> getRandomWord() async {
-    if (db == null) {
+  Future<Word> get word async {
+    if (_currentWord == null) {
+      await newRandomWord();
+    }
+    return _currentWord!;
+  }
+
+  Future<void> newRandomWord() async {
+    // load database if not already done
+    if (_db == null) {
       await loadDatabase();
     }
 
-    List<Map> list = await db!
+    List<Map> list = await _db!
         .rawQuery('SELECT * FROM simple_translation ORDER BY RANDOM() LIMIT 1');
     String wordText = list[0]['written_rep'];
     String descriptionText = list[0]['trans_list'];
     Word word = Word(word: wordText, description: descriptionText);
-    return word;
+    _currentWord = word;
   }
 }
 
@@ -60,5 +67,5 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   var manager = DatabaseManager();
   await manager.loadDatabase();
-  manager.getRandomWord();
+  manager.newRandomWord();
 }
