@@ -54,8 +54,8 @@ class DatabaseManager {
       await loadDatabase();
     }
 
-    List<Map> list = await _db!
-        .rawQuery('SELECT * FROM simple_translation ORDER BY RANDOM() LIMIT 1');
+    List<Map> list = await _db!.rawQuery(
+        'SELECT * FROM simple_translation WHERE (substr(written_rep, 1, 1) BETWEEN \'a\' AND \'z\') AND (LENGTH(written_rep) < 15) ORDER BY RANDOM() LIMIT 1');
     String wordText = list[0]['written_rep'];
     String descriptionText = list[0]['trans_list'];
     Word word = Word(word: wordText, description: descriptionText);
